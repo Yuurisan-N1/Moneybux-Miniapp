@@ -1,19 +1,20 @@
 <div align="center">
 
-<img width="100%" alt="header" src="https://capsule-render.vercel.app/api?type=waving&height=210&text=Money%20Bux%20Bot&fontAlign=50&fontAlignY=36&fontSize=56&desc=Daily%20Check-in%20%7C%20Spin%20Wheel%20%7C%20Treasury%20%7C%20Raiders%20%7C%20Multi-Account&descAlign=50&descAlignY=58"/>
+<img width="100%" alt="header" src="https://capsule-render.vercel.app/api?type=waving&height=210&text=Money%20Bux%20Bot&fontAlign=50&fontAlignY=36&fontSize=56&desc=Daily%20Check%20In%20%7C%20Reward%20Ads%20%7C%20Spin%20Wheel%20%7C%20Treasury%20%7C%20Raiders&descAlign=50&descAlignY=58"/>
 
-<img alt="typing" src="https://readme-typing-svg.demolab.com?font=Inter&size=18&duration=3000&pause=650&center=true&vCenter=true&width=900&lines=Auto+Daily+Check-in+%7C+Claim+Gold+%26+Diamonds;Auto+Spin+Wheel+%7C+Collect+Ad+Spins+%26+Spin+All;Auto+Treasury+%7C+Collect+Ad+Keys+%26+Open+All+Chests;Auto+Raiders+%7C+Collect+Ad+Raid+Passes;Games+Detected+Dynamically+from+Server"/>
+<img alt="typing" src="https://readme-typing-svg.demolab.com?font=Inter&size=18&duration=3000&pause=650&center=true&vCenter=true&width=900&lines=Telegram+InitData+Sign+In;Daily+Check+In+%7C+Signed+Reward+Ads;Spin+Wheel+%7C+Treasury+Chests+%7C+Raiders+Passes;Multi-Account+%7C+Sequential+Processing;Proxy+Support+%7C+One+Proxy+Per+Account"/>
 
 <p>
-  <img alt="python" src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white"/>
-  <img alt="platform" src="https://img.shields.io/badge/Platform-Money%20Bux%20Miniapp-111111"/>
+  <img alt="elixir" src="https://img.shields.io/badge/Elixir-1.14%2B-4B275F?logo=elixir&logoColor=white"/>
+  <img alt="platform" src="https://img.shields.io/badge/Platform-Money%20Bux-111111"/>
   <img alt="multi-account" src="https://img.shields.io/badge/Multi--Account-Supported-111111"/>
+  <img alt="proxy" src="https://img.shields.io/badge/Proxy-Supported-111111"/>
   <img alt="author" src="https://img.shields.io/badge/by-Yuurisandesu-111111"/>
 </p>
 
 <p>
   <b>Money Bux Bot</b> is a full automation bot for the Money Bux Telegram Miniapp.<br/>
-  It handles the complete daily cycle: claiming the daily check-in, then automatically detecting and playing all available games. For Spin Wheel it collects all available ad spins then spins until none remain. For Treasury it collects all available ad keys then opens all chests. For Raiders it collects all available ad raid passes. All game slugs are detected dynamically from the server so new games are picked up automatically.<br/>
+  It runs the complete daily cycle: the daily check in, the signed reward ads of every game, the spin wheel they unlock, the treasury chests, the raiders passes, all running automatically across multiple accounts with proxy support and a live countdown between cycles.<br/>
   Built and distributed by <b>Yuurisandesu</b>.
 </p>
 
@@ -35,12 +36,72 @@
 
 ## Requirements
 
-- Python `3.10+`
+- Elixir `1.14+` with Erlang/OTP `25+`
 - Git
+- An account on the Money Bux miniapp: https://t.me/MBuxBot
 
 ---
 
 ## Installation
+
+### Install Elixir
+
+Elixir runs on the Erlang virtual machine, so **Erlang/OTP is required** Elixir cannot run without
+it. Every package manager below installs Erlang/OTP for you as a dependency. The only path that needs
+a separate Erlang step is the Windows manual installer (see below).
+
+**Windows:**
+
+*Option A package manager (recommended, installs Erlang automatically):*
+
+```cmd
+winget install Elixir.Elixir
+```
+
+*Option B manual installer (two installers, in this order):*
+
+1. Download and run the **Erlang/OTP installer** from https://www.erlang.org/downloads
+2. Run `erl -s halt` to check which OTP version you got
+3. Download the **Elixir installer built for that exact OTP** from https://elixir-lang.org/install.html (`elixir-otp-<N>.exe`) and run it
+
+Then open Command Prompt and verify:
+
+```cmd
+elixir --version
+```
+
+The output prints both versions, for example `Elixir 1.14.0 (compiled with Erlang/OTP 25)`.
+
+**Linux (Ubuntu / Debian):**
+
+```bash
+sudo apt-get update
+sudo apt-get install -y elixir
+elixir --version
+```
+
+**macOS:**
+
+```bash
+brew install elixir
+elixir --version
+```
+
+> If you do not have Homebrew, install it first from https://brew.sh
+
+**Termux (Android):**
+
+```bash
+pkg update && pkg upgrade -y
+pkg install elixir -y
+elixir --version
+```
+
+> If the `elixir` package is not available in your Termux repository, install an Ubuntu environment first with `pkg install proot-distro`, then `proot-distro install ubuntu`, then `proot-distro login ubuntu` and run the Linux command above inside it.
+
+---
+
+### Clone and Install
 
 **Clone the repository:**
 
@@ -51,9 +112,7 @@ cd Moneybux-Miniapp
 
 **Install dependencies:**
 
-```bash
-pip install aiohttp beautifulsoup4 colorama
-```
+This bot uses only the Elixir standard library, so there is nothing to install. Erlang/OTP was already installed by the step above.
 
 ---
 
@@ -61,50 +120,84 @@ pip install aiohttp beautifulsoup4 colorama
 
 ### 1. Accounts (data.txt)
 
-Fill `data.txt` with Telegram WebApp `initData` for each account, one per line:
+Fill `data.txt` with the Telegram WebApp `initData` of each account, one per line:
 
 ```
-user=%7B%22id%22...&hash=abc123
-user=%7B%22id%22...&hash=def456
+query_id=AAH...&user=%7B%22id%22%3A123%7D&auth_date=...&hash=abc123
+query_id=AAH...&user=%7B%22id%22%3A456%7D&auth_date=...&hash=def456
 ```
 
-> `initData` can be obtained from the browser DevTools when opening Money Bux on Telegram Web.
+> `initData` can be obtained from the browser DevTools when opening the Money Bux Miniapp on Telegram Web. The whole WebView URL is accepted too, and the bot strips it down to the inner `initData` itself. Each account is identified by its own `initData`, so no extra id column is needed.
 
-### 2. Bot Settings (config.json)
+### 2. Proxy (proxy.txt)
 
-`sleep_seconds` controls how many seconds the bot waits between cycles.
+Fill `proxy.txt` with proxies, one per line (optional, leave empty to run without proxy):
+
+```
+host:port
+host:port:user:pass
+http://user:pass@host:port
+```
+
+Proxies are assigned to accounts by index in round-robin order, and proxy credentials are masked in the log output.
+
+### 3. Bot Settings (config.json)
+
+`sleep_seconds` controls how long the bot waits between cycles. Accounts are processed back to back with no delay in between.
+
+```json
+{
+  "settings": {
+    "sleep_seconds": 3600
+  }
+}
+```
 
 ---
 
 ## Running the Bot
 
+**Linux / macOS:**
+
 ```bash
-python bot.py
+elixir --erl "+Bd" bot.exs
 ```
 
-Press `Ctrl+C` at any time to stop the bot cleanly.
+**Windows:**
+
+```cmd
+elixir --erl "+Bc" bot.exs
+```
+
+Or just double click `run_pc.bat`, which runs the Windows command above.
 
 ---
 
 ## Features
 
-### Daily Check-in
-The bot submits the daily check-in claim for each account. If successful, it logs the Gold and Diamonds received. If already claimed today or not yet available, it is skipped silently.
+### Account State
+At the start of every account the bot signs in with that account `initData`, keeps the session cookie the server issues and logs the account name together with the current gold and diamond balance. An account whose `initData` is refused is reported and skipped before any other request is sent.
 
-### Dynamic Game Detection
-Before processing games, the bot fetches the live game list from the server by parsing the game navigation buttons from the HTML response. Only valid game slugs are processed. If the fetch fails, it falls back to the default set of Wheel, Treasury, and Raiders. New games added server-side are picked up automatically without any code changes.
+### Daily Check In
+The daily check in is claimed at the start of every account and the reward the server credits is logged. A check in the server has already granted for the day is reported as its own line instead of being retried.
 
-### Auto Spin Wheel
-The bot fetches the current Spin Wheel state, reads how many ads have been watched today against the cap of 50, and collects all remaining ad reward slots. Each slot gets a validation hash, builds a signed payload, and submits the claim. After all ad spins are collected, the bot spins the wheel one by one until no spins remain. Each spin logs the Gold earned and spins remaining.
+### Reward Ads
+Every reward ad the server still allows for the day is claimed one by one. Each claim is signed with a fresh payload built from the validation hash the server issues for that action, the session id, the current timestamp and a random nonce, and the signature is logged through as the amount the server credits together with the position inside the daily quota. A claim the server refuses ends the ad phase for that game so the rest of the cycle keeps moving.
 
-### Auto Treasury
-The bot fetches the current Treasury state, reads how many ads have been watched today against the cap of 50, and collects all remaining ad key reward slots using the same signed payload flow. After all ad keys are collected, the bot opens chests one by one until no keys remain. Each chest logs the loot amount, Gold, Diamonds, and keys remaining.
+### Spin Wheel
+The spins the server reports as ready are spent on the wheel one by one and the number of spins left after each rotation is logged. A wheel the server reports as empty is stated plainly instead of being retried.
 
-### Auto Raiders
-The bot fetches the current Raiders state, reads how many ads have been watched today against the cap of 50, and collects all remaining ad raid pass reward slots. Each claim logs the Gold earned and ads watched. Raiders has no secondary action after collecting passes.
+### Treasury
+Every key the server reports as ready is spent on a chest and the loot the server credits is logged together with the keys left. A treasury the server reports as empty is stated plainly instead of being retried.
+
+### Raiders
+The raiders passes are earned by claiming the reward ad the server offers for them, and the position inside the daily quota is logged for each one. A quota that is already full for the day is reported as such.
 
 ### Multi Account
-All accounts in `data.txt` are processed sequentially within every cycle. Gold and Diamonds balance are logged at the start of each account. The cycle number is tracked and logged at the start of each round.
+All accounts in `data.txt` are processed sequentially within every cycle. Each account block starts with its own proxy line, and blocks are separated by one blank line so the mapping between an account and its egress is auditable in the log. The cycle number is logged at the start of each round.
+
+### Proxy Support
+Proxies are loaded from `proxy.txt` and assigned to accounts by position in round-robin order. Proxy credentials are masked in log output. Running without proxies is fully supported.
 
 ### Auto Countdown
 After all accounts complete a cycle, the bot displays a live `HH:MM:SS` countdown until the next cycle starts.
@@ -114,13 +207,16 @@ After all accounts complete a cycle, the bot displays a live `HH:MM:SS` countdow
 ## File Structure
 
 ```text
-Moneybux-Miniapp/
-├── bot.py          # Main bot, full daily cycle automation
+MBuxBot-Elixir/
+├── bot.exs         # Main bot, full daily cycle automation
 ├── config.json     # Sleep duration between cycles
 ├── data.txt        # Account initData, one per line
+├── proxy.txt       # Proxy list, one per line (optional)
+├── run_pc.bat      # Launcher for Windows
 ├── LICENSE         # License file
 └── utils/
-    └── banner.py   # Banner display on startup
+    ├── banner.ex   # Banner display on startup
+    └── json.ex     # JSON encoder and decoder
 ```
 
 ---
